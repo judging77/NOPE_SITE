@@ -34,11 +34,6 @@ class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium">
 Send Feedback to NOPE
 </button>
 
-<button onclick="checkForUpdates()"
-class="px-6 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg font-medium">
-Check for Updates
-</button>
-
 <a href="https://www.mediafire.com/folder/jy7vaiogeqzd8/XO_CALCULATOR"
 target="_blank"
 class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-medium">
@@ -447,18 +442,6 @@ function openFeedback(){
         window.location.href=
         `mailto:nopenoted20@gmail.com?subject=Gun Stats Tool Feedback&body=${encodeURIComponent(body)}`;
     }
-}
-
-/* -----------------------------
-UPDATES
------------------------------ */
-
-function checkForUpdates(){
-    window.open(
-        "https://www.mediafire.com/folder/jy7vaiogeqzd8/XO_CALCULATOR",
-        "_blank"
-    );
-    alert("Opening download page for latest desktop version...");
 }
 
 /* -----------------------------
