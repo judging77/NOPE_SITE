@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +10,7 @@
 <style>
 body{font-family:system-ui,sans-serif;}
 .log-table th{cursor:pointer;}
-.log-table th:hover{background:#27272a;}
+.log-table th:hover{background-color:#27272a;}
 </style>
 </head>
 
@@ -19,6 +20,7 @@ body{font-family:system-ui,sans-serif;}
 
 <!-- HEADER -->
 <div class="flex justify-between items-center mb-8 border-b border-zinc-800 pb-6">
+
 <div>
 <h1 class="text-4xl font-bold tracking-tight">GUN STATS TOOL</h1>
 <p class="text-zinc-400 text-sm mt-1">Made by NOPE • Web v1.0</p>
@@ -45,7 +47,6 @@ Download Desktop .exe
 </div>
 </div>
 
-<!-- MAIN CONTENT -->
 <div id="mainContent"
 class="bg-zinc-900 rounded-2xl p-8 shadow-xl"></div>
 
@@ -59,13 +60,41 @@ let logs = JSON.parse(localStorage.getItem("gunLogs")) || [];
 const CURRENT_VERSION="1.0";
 
 
+/* ---------------------------
+HISTORY NAVIGATION SYSTEM
+--------------------------- */
+
+function setPage(page){
+history.pushState({page:page},"","#"+page);
+}
+
+window.onpopstate=function(event){
+
+const page=event.state?.page || "menu";
+
+if(page==="menu") renderMainMenu();
+else if(page==="calculator") showCalculator();
+else if(page==="log") showLog();
+else if(page==="sorted") showSorted("dps");
+};
+
+
+/* ---------------------------
+STORAGE
+--------------------------- */
+
 function saveLogs(){
 localStorage.setItem("gunLogs",JSON.stringify(logs));
 }
 
 
+/* ---------------------------
+MAIN MENU
+--------------------------- */
 
 function renderMainMenu(){
+
+setPage("menu");
 
 document.getElementById("mainContent").innerHTML=`
 
@@ -81,7 +110,7 @@ class="bg-zinc-800 hover:bg-zinc-700 p-8 rounded-2xl text-xl font-semibold">
 View Gun Log
 </button>
 
-<button onclick="clearDisplay()"
+<button onclick="renderMainMenu()"
 class="bg-zinc-800 hover:bg-zinc-700 p-8 rounded-2xl text-xl font-semibold">
 Clear Display
 </button>
@@ -109,12 +138,16 @@ Sort by Lowest TTK
 
 </div>
 `;
-
 }
 
 
+/* ---------------------------
+CALCULATOR
+--------------------------- */
 
 function showCalculator(){
+
+setPage("calculator");
 
 document.getElementById("mainContent").innerHTML=`
 
@@ -157,7 +190,6 @@ class="w-full bg-zinc-800 rounded-lg px-4 py-3">
 
 </div>
 
-
 <div class="flex gap-4 mt-8">
 
 <button onclick="calculate()"
@@ -177,10 +209,12 @@ class="mt-8 bg-black p-6 rounded-2xl hidden"></div>
 
 </div>
 `;
-
 }
 
 
+/* ---------------------------
+CALCULATE
+--------------------------- */
 
 function calculate(){
 
@@ -189,7 +223,6 @@ const bullets=parseFloat(document.getElementById("bullets").value);
 const seconds=parseFloat(document.getElementById("seconds").value);
 const dmg=parseFloat(document.getElementById("dmg").value);
 const hp=parseFloat(document.getElementById("hp").value);
-
 
 if(!gun||isNaN(bullets)||isNaN(seconds)||isNaN(dmg)||isNaN(hp)){
 alert("Please fill all fields");
@@ -201,11 +234,9 @@ alert("Time must be greater than 0");
 return;
 }
 
-
 const bps=(bullets/seconds).toFixed(3);
 const dps=(bps*dmg).toFixed(2);
 const ttk=dps>0?(hp/dps).toFixed(3):"∞";
-
 
 document.getElementById("resultBox").innerHTML=`
 
@@ -223,97 +254,87 @@ TTK: ${ttk} seconds
 
 document.getElementById("resultBox").classList.remove("hidden");
 
-
 const now=new Date();
 
 logs.push({
-
 date:now.toISOString().split("T")[0],
 time:now.toTimeString().slice(0,8),
-
 gun,
 bullets,
 seconds,
 dmg,
 hp,
-
 bps:parseFloat(bps),
 dps:parseFloat(dps),
 ttk:ttk==="∞"?Infinity:parseFloat(ttk)
-
 });
 
 saveLogs();
-
 }
 
 
+/* ---------------------------
+LOG VIEW
+--------------------------- */
 
 function showLog(){
 
-let html=`<h2 class="text-2xl font-bold mb-6">Gun Log</h2>`;
+setPage("log");
 
+let html=`<h2 class="text-2xl font-bold mb-6">Gun Log</h2>`;
 
 if(logs.length===0){
 
 html+=`<p class="text-zinc-400">No entries yet</p>`;
 
-}
-
-else{
+}else{
 
 html+=`
 
 <table class="log-table w-full text-left">
 
 <thead class="bg-zinc-800">
-
 <tr>
-
 <th onclick="sortTable(0)" class="p-3">Date</th>
 <th onclick="sortTable(1)" class="p-3">Gun</th>
 <th onclick="sortTable(2)" class="p-3">BPS</th>
 <th onclick="sortTable(3)" class="p-3">DPS</th>
 <th onclick="sortTable(4)" class="p-3">TTK</th>
-
 </tr>
-
 </thead>
 
 <tbody>
 `;
-
 
 logs.forEach(log=>{
 
 const ttkDisplay=isFinite(log.ttk)?log.ttk:"∞";
 
 html+=`
-
 <tr class="border-t border-zinc-800">
-
 <td class="p-3">${log.date} ${log.time}</td>
 <td class="p-3">${log.gun}</td>
 <td class="p-3">${log.bps}</td>
 <td class="p-3">${log.dps}</td>
 <td class="p-3">${ttkDisplay}</td>
-
 </tr>
 `;
-
 });
 
 html+=`</tbody></table>`;
-
 }
 
 document.getElementById("mainContent").innerHTML=html;
-
 }
 
 
+/* ---------------------------
+SORTED VIEW
+--------------------------- */
 
 function showSorted(type){
+
+setPage("sorted");
 
 let sorted=[...logs];
 
@@ -321,26 +342,21 @@ if(type==="dps")sorted.sort((a,b)=>b.dps-a.dps);
 if(type==="bps")sorted.sort((a,b)=>b.bps-a.bps);
 if(type==="ttk")sorted.sort((a,b)=>a.ttk-b.ttk);
 
-
 let html=`<h2 class="text-2xl font-bold mb-6">
 Sorted by ${type.toUpperCase()}
 </h2>`;
-
 
 if(sorted.length===0){
 
 html+=`<p class="text-zinc-400">No entries</p>`;
 
-}
-
-else{
+}else{
 
 html+=`
 
 <table class="log-table w-full text-left">
 
 <thead class="bg-zinc-800">
-
 <tr>
 <th class="p-3">Date</th>
 <th class="p-3">Gun</th>
@@ -348,7 +364,6 @@ html+=`
 <th class="p-3">DPS</th>
 <th class="p-3">TTK</th>
 </tr>
-
 </thead>
 
 <tbody>
@@ -359,82 +374,26 @@ sorted.forEach(log=>{
 const ttkDisplay=isFinite(log.ttk)?log.ttk:"∞";
 
 html+=`
-
 <tr class="border-t border-zinc-800">
-
 <td class="p-3">${log.date} ${log.time}</td>
 <td class="p-3">${log.gun}</td>
 <td class="p-3">${log.bps}</td>
 <td class="p-3">${log.dps}</td>
 <td class="p-3">${ttkDisplay}</td>
-
 </tr>
 `;
-
 });
 
 html+=`</tbody></table>`;
-
 }
-
-html+=`
-
-<div class="mt-6">
-
-<button onclick="renderMainMenu()"
-class="bg-zinc-700 hover:bg-zinc-600 px-6 py-3 rounded-xl">
-
-Back
-
-</button>
-
-</div>
-`;
 
 document.getElementById("mainContent").innerHTML=html;
-
 }
 
 
-
-function sortTable(col){
-
-const tbody=document.querySelector("tbody");
-if(!tbody)return;
-
-const rows=Array.from(tbody.querySelectorAll("tr"));
-
-rows.sort((a,b)=>{
-
-const valA=a.children[col].textContent;
-const valB=b.children[col].textContent;
-
-if(col===2||col===3)return parseFloat(valB)-parseFloat(valA);
-
-if(col===4){
-
-const na=valA==="∞"?Infinity:parseFloat(valA);
-const nb=valB==="∞"?Infinity:parseFloat(valB);
-
-return na-nb;
-
-}
-
-return valA.localeCompare(valB);
-
-});
-
-rows.forEach(r=>tbody.appendChild(r));
-
-}
-
-
-
-function clearDisplay(){
-renderMainMenu();
-}
-
-
+/* ---------------------------
+DELETE LOG
+--------------------------- */
 
 function deleteLog(){
 
@@ -446,12 +405,13 @@ saveLogs();
 alert("Log deleted");
 
 renderMainMenu();
-
+}
 }
 
-}
 
-
+/* ---------------------------
+FEEDBACK + UPDATE
+--------------------------- */
 
 function openFeedback(){
 
@@ -462,22 +422,20 @@ if(comment){
 const body=`Gun Stats Tool Feedback\n\n${comment}\n\nSent from Web v${CURRENT_VERSION}`;
 
 window.location.href=`mailto:nopenoted20@gmail.com?subject=Gun Stats Tool Feedback&body=${encodeURIComponent(body)}`;
-
 }
-
 }
-
-
 
 function checkForUpdates(){
 
 window.open("https://www.mediafire.com/folder/jy7vaiogeqzd8/XO_CALCULATOR","_blank");
 
 alert("Opening download page for latest desktop version");
-
 }
 
 
+/* ---------------------------
+START APP
+--------------------------- */
 
 renderMainMenu();
 
@@ -485,3 +443,4 @@ renderMainMenu();
 
 </body>
 </html>
+```
