@@ -31,6 +31,11 @@ body{font-family:system-ui,sans-serif;}
 .result-animate {
   animation: slideFade 0.5s ease forwards;
 }
+/* Online counter hover glow */
+#onlineCounter:hover {
+  box-shadow: 0 0 15px #00FFAA;
+  transition: 0.3s;
+}
 </style>
 </head>
 
@@ -48,6 +53,12 @@ body{font-family:system-ui,sans-serif;}
 
   <div id="mainContent" class="bg-glass rounded-2xl p-8 shadow-xl"></div>
 
+</div>
+
+<!-- Online users counter -->
+<div id="onlineCounter"
+     class="fixed bottom-4 right-4 bg-zinc-800 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-semibold">
+  Online: 123
 </div>
 
 <script>
@@ -237,36 +248,6 @@ function showLog(addHistory=true){
 }
 
 /* -----------------------------
-SORT VIEW
------------------------------ */
-function showSorted(type, addHistory=true){
-    if(addHistory){ history.pushState({page:"sorted_"+type},"","#sorted_"+type); }
-    let sorted=[...logs];
-    if(type==="dps") sorted.sort((a,b)=>b.dps-a.dps);
-    if(type==="bps") sorted.sort((a,b)=>b.bps-a.bps);
-    if(type==="ttk") sorted.sort((a,b)=>a.ttk-b.ttk);
-
-    let html = `<h2 class="text-3xl font-bold mb-6 text-cyan-400 drop-shadow-[0_0_10px_cyan]">Sorted by ${type.toUpperCase()}</h2>`;
-    html += `<button onclick="renderMainMenu()" class="mb-4 bg-zinc-700 px-4 py-2 rounded-lg">Back</button>`;
-    html += `<table class="log-table w-full text-left">
-        <thead class="bg-zinc-800">
-        <tr><th class="p-3">Date</th><th class="p-3">Gun</th><th class="p-3">BPS</th><th class="p-3">DPS</th><th class="p-3">TTK</th></tr>
-        </thead><tbody>`;
-    sorted.forEach(log=>{
-        const ttkDisplay=isFinite(log.ttk)?log.ttk:"∞";
-        html += `<tr class="border-t border-zinc-800">
-        <td class="p-3">${log.date} ${log.time}</td>
-        <td class="p-3">${log.gun}</td>
-        <td class="p-3">${log.bps}</td>
-        <td class="p-3">${log.dps}</td>
-        <td class="p-3">${ttkDisplay}</td>
-        </tr>`;
-    });
-    html += `</tbody></table>`;
-    document.getElementById("mainContent").innerHTML = html;
-}
-
-/* -----------------------------
 DELETE LOG
 ----------------------------- */
 function deleteLog(){
@@ -287,6 +268,20 @@ function openFeedback(){
         window.location.href=`mailto:nopenoted20@gmail.com?subject=Gun Stats Tool Feedback&body=${encodeURIComponent(body)}`;
     }
 }
+
+/* -----------------------------
+ONLINE USERS COUNTER
+----------------------------- */
+function updateOnlineCounter() {
+    const min = 60;
+    const max = 200;
+    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    document.getElementById("onlineCounter").textContent = `Online: ${randomNumber}`;
+}
+// Initialize immediately
+updateOnlineCounter();
+// Update every 5 minutes
+setInterval(updateOnlineCounter, 300000);
 
 /* -----------------------------
 START APP
