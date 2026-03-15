@@ -49,6 +49,10 @@ body{font-family:system-ui,sans-serif;}
         class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium shadow-md">
         Feedback
       </button>
+      <button onclick="downloadApp()"
+        class="px-6 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium shadow-md">
+        Download App
+      </button>
       <span id="onlineCounter"
             class="bg-zinc-800 text-white px-4 py-2 rounded-lg shadow-md text-sm font-semibold">
         Online: 123
@@ -305,11 +309,18 @@ function deleteLog(){
 FEEDBACK
 ----------------------------- */
 function openFeedback(){
-    const comment=prompt("Write your feedback:");
+    const comment = prompt("Write your feedback:");
     if(comment){
-        const body=`Gun Stats Tool Feedback\n\n${comment}\n\nSent from Web v${CURRENT_VERSION}`;
-        window.location.href=`mailto:nopenoted20@gmail.com?subject=Gun Stats Tool Feedback&body=${encodeURIComponent(body)}`;
+        const body = `Gun Stats Tool Feedback\n\n${comment}\n\nSent from Web v${CURRENT_VERSION}`;
+        window.location.href = `mailto:nopenoted20@gmail.com?subject=Gun Stats Tool Feedback&body=${encodeURIComponent(body)}`;
     }
+}
+
+/* -----------------------------
+DOWNLOAD APP
+----------------------------- */
+function downloadApp(){
+    window.open("https://app.mediafire.com/folder/rm1fu3dqpz316","_blank");
 }
 
 /* -----------------------------
