@@ -124,6 +124,21 @@ function renderMainMenu(addHistory=true){
         Delete Log
       </button>
 
+      <div class="flex gap-4 mt-4">
+        <button onclick="showSorted('dps')"
+          class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg font-semibold shadow-md transition hover:scale-105">
+          Sort by Highest DPS
+        </button>
+        <button onclick="showSorted('bps')"
+          class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg font-semibold shadow-md transition hover:scale-105">
+          Sort by Highest BPS
+        </button>
+        <button onclick="showSorted('ttk')"
+          class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg font-semibold shadow-md transition hover:scale-105">
+          Sort by Lowest TTK
+        </button>
+      </div>
+
     </div>
     `;
 }
@@ -222,78 +237,30 @@ function showCategory(category, addHistory=true){
     let filtered = logs.filter(log => log.category === category);
 
     let html = `<h2 class="text-3xl font-bold mb-6 text-cyan-400">${category}</h2>`;
-
-    // Sorting buttons
-    html += `
-      <div class="flex gap-4 mb-4">
-        <button onclick="sortCategory('${category}','dps')" class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg font-semibold shadow-md">Highest DPS</button>
-        <button onclick="sortCategory('${category}','bps')" class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg font-semibold shadow-md">Highest BPS</button>
-        <button onclick="sortCategory('${category}','ttk')" class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg font-semibold shadow-md">Lowest TTK</button>
-      </div>
-    `;
-
     html += `<button onclick="showCalculator()"
                   class="mb-4 bg-zinc-700 px-4 py-2 rounded-lg font-semibold shadow-md hover:bg-zinc-600">
                  Back to Calculator
              </button>`;
-
     if(filtered.length === 0){
         html += `<p class="text-zinc-400">No guns saved in this category yet.</p>`;
     } else {
-        html += renderLogTable(filtered);
-    }
-
-    document.getElementById("mainContent").innerHTML = html;
-}
-
-// Sorting inside category
-function sortCategory(category, type){
-    let filtered = logs.filter(log => log.category === category);
-
-    if(type === 'dps') filtered.sort((a,b) => b.dps - a.dps);
-    if(type === 'bps') filtered.sort((a,b) => b.bps - a.bps);
-    if(type === 'ttk') filtered.sort((a,b) => a.ttk - b.ttk);
-
-    let html = `<h2 class="text-3xl font-bold mb-6 text-cyan-400">${category}</h2>`;
-
-    // Sorting buttons again
-    html += `
-      <div class="flex gap-4 mb-4">
-        <button onclick="sortCategory('${category}','dps')" class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg font-semibold shadow-md">Highest DPS</button>
-        <button onclick="sortCategory('${category}','bps')" class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg font-semibold shadow-md">Highest BPS</button>
-        <button onclick="sortCategory('${category}','ttk')" class="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg font-semibold shadow-md">Lowest TTK</button>
-      </div>
-    `;
-
-    html += `<button onclick="showCalculator()"
-                  class="mb-4 bg-zinc-700 px-4 py-2 rounded-lg font-semibold shadow-md hover:bg-zinc-600">
-                 Back to Calculator
-             </button>`;
-
-    html += renderLogTable(filtered);
-
-    document.getElementById("mainContent").innerHTML = html;
-}
-
-// Helper to render table
-function renderLogTable(array){
-    let html = `<table class="log-table w-full text-left">
+        html += `<table class="log-table w-full text-left">
                  <thead class="bg-zinc-800">
-                 <tr><th class="p-3">Date</th><th class="p-3">Gun</th>
-                     <th class="p-3">BPS</th><th class="p-3">DPS</th><th class="p-3">TTK</th></tr>
+                 <tr><th class="p-3">Date</th><th class="p-3">Gun</th><th class="p-3">BPS</th><th class="p-3">DPS</th><th class="p-3">TTK</th></tr>
                  </thead><tbody>`;
-    array.forEach(log=>{
-        const ttkDisplay = isFinite(log.ttk) ? log.ttk : "∞";
-        html += `<tr class="border-t border-zinc-800">
-                    <td class="p-3">${log.date} ${log.time}</td>
-                    <td class="p-3">${log.gun}</td>
-                    <td class="p-3">${log.bps}</td>
-                    <td class="p-3">${log.dps}</td>
-                    <td class="p-3">${ttkDisplay}</td>
-                 </tr>`;
-    });
-    html += `</tbody></table>`;
-    return html;
+        filtered.forEach(log=>{
+            const ttkDisplay=isFinite(log.ttk)?log.ttk:"∞";
+            html += `<tr class="border-t border-zinc-800">
+                        <td class="p-3">${log.date} ${log.time}</td>
+                        <td class="p-3">${log.gun}</td>
+                        <td class="p-3">${log.bps}</td>
+                        <td class="p-3">${log.dps}</td>
+                        <td class="p-3">${ttkDisplay}</td>
+                     </tr>`;
+        });
+        html += `</tbody></table>`;
+    }
+    document.getElementById("mainContent").innerHTML = html;
 }
 
 /* -----------------------------
@@ -364,7 +331,22 @@ function showLog(addHistory=true){
     let html = `<h2 class="text-3xl font-bold mb-6 text-cyan-400">Gun Log</h2>`;
     if(logs.length===0){ html += `<p class="text-zinc-400">No entries yet</p>`; }
     else{
-        html += renderLogTable(logs);
+        html += `<table class="log-table w-full text-left">
+        <thead class="bg-zinc-800">
+        <tr><th class="p-3">Date</th><th class="p-3">Gun</th><th class="p-3">BPS</th><th class="p-3">DPS</th><th class="p-3">TTK</th><th class="p-3">Category</th></tr>
+        </thead><tbody>`;
+        logs.forEach(log=>{
+            const ttkDisplay=isFinite(log.ttk)?log.ttk:"∞";
+            html += `<tr class="border-t border-zinc-800">
+            <td class="p-3">${log.date} ${log.time}</td>
+            <td class="p-3">${log.gun}</td>
+            <td class="p-3">${log.bps}</td>
+            <td class="p-3">${log.dps}</td>
+            <td class="p-3">${ttkDisplay}</td>
+            <td class="p-3">${log.category}</td>
+            </tr>`;
+        });
+        html += `</tbody></table>`;
     }
     document.getElementById("mainContent").innerHTML = html;
 }
@@ -372,10 +354,81 @@ function showLog(addHistory=true){
 /* -----------------------------
 SORT VIEW, DELETE, FEEDBACK, DOWNLOAD, COUNTER
 ----------------------------- */
+// (keep your existing functions here exactly the same as before)
 function showSorted(type, addHistory = true){
     setPage("sorted_" + type, addHistory);
     let sorted = [...logs];
     if(type === "dps") sorted.sort((a,b) => b.dps - a.dps);
     if(type === "bps") sorted.sort((a,b) => b.bps - a.bps);
     if(type === "ttk") sorted.sort((a,b) => a.ttk - b.ttk);
-    let html = `<h2 class="text-3xl
+    let html = `<h2 class="text-3xl font-bold mb-6 text-cyan-400">Sorted by ${type.toUpperCase()}</h2>`;
+    html += `<button onclick="renderMainMenu()"
+                  class="mb-4 bg-zinc-700 px-4 py-2 rounded-lg font-semibold shadow-md hover:bg-zinc-600">
+                 Back to Menu
+             </button>`;
+    if(sorted.length === 0){
+        html += `<p class="text-zinc-400">No entries yet</p>`;
+    } else {
+        html += `<table class="log-table w-full text-left">
+                 <thead class="bg-zinc-800">
+                 <tr><th class="p-3">Date</th><th class="p-3">Gun</th>
+                     <th class="p-3">BPS</th><th class="p-3">DPS</th><th class="p-3">TTK</th><th class="p-3">Category</th></tr>
+                 </thead><tbody>`;
+        sorted.forEach(log => {
+            const ttkDisplay = isFinite(log.ttk) ? log.ttk : "∞";
+            html += `<tr class="border-t border-zinc-800">
+                        <td class="p-3">${log.date} ${log.time}</td>
+                        <td class="p-3">${log.gun}</td>
+                        <td class="p-3">${log.bps}</td>
+                        <td class="p-3">${log.dps}</td>
+                        <td class="p-3">${ttkDisplay}</td>
+                        <td class="p-3">${log.category}</td>
+                     </tr>`;
+        });
+        html += `</tbody></table>`;
+    }
+    document.getElementById("mainContent").innerHTML = html;
+}
+
+function deleteLog(){
+    if(confirm("Delete ALL saved stats permanently?")){
+        logs=[]; saveLogs();
+        alert("Log deleted!");
+        renderMainMenu();
+    }
+}
+
+function openFeedback(){
+    const comment = prompt("Write your feedback:");
+    if(comment){
+        emailjs.send(
+            "service_16ec2gc",
+            "template_ykwawxr",
+            { message: comment }
+        )
+        .then(() => { alert("Feedback sent successfully!"); })
+        .catch((err) => { 
+            console.error(err);
+            alert("Failed to send feedback. Check console."); 
+        });
+    }
+}
+
+function downloadApp(){
+    window.open("https://app.mediafire.com/folder/rm1fu3dqpz316","_blank");
+}
+
+function updateOnlineCounter() {
+    const min = 60;
+    const max = 200;
+    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    document.getElementById("onlineCounter").textContent = `Online: ${randomNumber}`;
+}
+updateOnlineCounter();
+setInterval(updateOnlineCounter, 300000);
+
+renderMainMenu();
+</script>
+
+</body>
+</html>
