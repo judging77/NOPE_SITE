@@ -24,7 +24,7 @@ body{font-family:system-ui,sans-serif;}
 
 <div>
 <h1 class="text-4xl font-bold tracking-tight">GUN STATS TOOL</h1>
-<p class="text-zinc-400 text-sm mt-1">Made by NOPE • Web v1.1</p>
+<p class="text-zinc-400 text-sm mt-1">Made by NOPE • Web v1.2</p>
 </div>
 
 <div class="flex gap-3">
@@ -46,6 +46,11 @@ Download Desktop .exe
 <div id="mainContent"
 class="bg-zinc-900 rounded-2xl p-8 shadow-xl"></div>
 
+<!-- ONLINE USERS COUNTER -->
+<div id="onlineUsers" class="fixed bottom-4 right-4 bg-zinc-800 text-white px-4 py-2 rounded-xl shadow-lg text-sm font-semibold">
+Online Users: 0
+</div>
+
 </div>
 
 <script>
@@ -55,7 +60,7 @@ DATA STORAGE
 ----------------------------- */
 
 let logs = JSON.parse(localStorage.getItem("gunLogs")) || [];
-const CURRENT_VERSION="1.1";
+const CURRENT_VERSION="1.2";
 
 /* Save local logs */
 function saveLogs(){
@@ -416,6 +421,24 @@ async function showLeaderboard(addHistory=true){
     html += `</tbody></table></div>`;
     document.getElementById("mainContent").innerHTML = html;
 }
+
+/* -----------------------------
+ONLINE USERS COUNTER
+----------------------------- */
+
+async function updateOnlineUsers(){
+    try {
+        const res = await fetch('http://YOUR_SERVER_IP:3000/active-users'); 
+        const data = await res.json();
+        document.getElementById('onlineUsers').innerText = `Online Users: ${data.count}`;
+    } catch(e) {
+        console.warn("Could not fetch online users", e);
+    }
+}
+
+// Update every 5 seconds
+setInterval(updateOnlineUsers, 5000);
+updateOnlineUsers();
 
 /* -----------------------------
 DELETE LOG
